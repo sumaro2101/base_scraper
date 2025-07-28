@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.11"
 loguru = "^0.7.3"
 selenium = {extras = ["py"], version = "^4.34.2"}
+kafka-python = "^2.2.15"
+pydantic-settings = "^2.10.1"
 
 
 [build-system]
