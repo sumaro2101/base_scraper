@@ -5,7 +5,7 @@ class TypeBrowser(str, Enum):
     """
     Типы поддерживаемых браузеров
     """
-    CHROME = 'Goggle Chrome'
+    CHROME = 'Google Chrome'
     FIREFOX = 'Firefox'
     SAFARI = 'Sarari'
     EDGE = 'Edge'

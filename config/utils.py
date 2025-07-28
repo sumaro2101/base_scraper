@@ -3,5 +3,7 @@ from .exeptions import ClassBrowserNotProvideError
 
 
 def check_type_browser(type_browser: str) -> None:
-    if type_browser not in TypeBrowser:
+    try:
+        TypeBrowser[type_browser]
+    except KeyError:
         raise ClassBrowserNotProvideError(f'{type_browser} is not provide')
