@@ -1,9 +1,21 @@
-from .common import TypeBrowser
-from .exeptions import ClassBrowserNotProvideError
+from .common import TypeBrowser, ErrorCodeProgram
+from .exeptions import (
+    ClassBrowserNotProvideError,
+    RequiredEnviromentNotSetError,
+    )
+
+
+ENV_NAME_BROWSER = 'TYPE_BROWSER'
 
 
 def check_type_browser(type_browser: str) -> None:
+    if not type_browser:
+        raise RequiredEnviromentNotSetError(
+            ErrorCodeProgram.ENV_NOT_FOUND.format(ENV_NAME_BROWSER),
+            )
     try:
         TypeBrowser[type_browser]
     except KeyError:
-        raise ClassBrowserNotProvideError(f'{type_browser} is not provide')
+        raise ClassBrowserNotProvideError(
+            ErrorCodeProgram.BROWSER_NOT_PROVIDE.format(type_browser),
+            )

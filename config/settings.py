@@ -38,4 +38,5 @@ class Settings:
     """
     Базовая Конфигурация браузера
     """
+    TYPE_BROWSER: ClassVar[str | None] = os.getenv('TYPE_BROWSER')
     PROXY: ClassVar[str] = ProxySettings.get_proxy_address(os.getenv('TYPE_BROWSER'))
