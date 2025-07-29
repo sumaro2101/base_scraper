@@ -20,10 +20,8 @@ class ProxySettings:
     """
     Конфигурация прокси
     """
-    PROXY_ID: ClassVar[str | None] = os.getenv('PROXY_ID')
-    PROXY_PORT: ClassVar[str | None] = os.getenv('PROXY_PORT')
-    PROXY_USERNAME: ClassVar[str | None] = os.getenv('PROXY_USERNAME')
-    PROXY_PASSWORD: ClassVar[str | None] = os.getenv('PROXY_PASSWORD')
+    PROXIES_SIMPLE: ClassVar[list | None] = os.getenv('PROXIES_SIMPLE')
+    PROXIES_AUTH: ClassVar[list | None] = os.getenv('PROXIES_AUTH')
     IPV4: ClassVar[bool] = False if os.getenv('IPV4_ENABLE') == 'False' else True
 
     @staticmethod
@@ -31,12 +29,12 @@ class ProxySettings:
         """
         Получение адресса прокси
         """
-        check_type_browser(type_browser)
+
 
 
 class Settings:
     """
     Базовая Конфигурация браузера
     """
-    TYPE_BROWSER: ClassVar[str | None] = os.getenv('TYPE_BROWSER')
-    PROXY: ClassVar[str] = ProxySettings.get_proxy_address(os.getenv('TYPE_BROWSER'))
+    TYPE_BROWSER: ClassVar[str | None] = check_type_browser(os.getenv('TYPE_BROWSER'))
+    PROXIES: ClassVar[dict[str, str]] = ProxySettings.get_proxy_address(TYPE_BROWSER)

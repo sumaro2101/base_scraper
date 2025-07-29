@@ -11,6 +11,7 @@ loguru = "^0.7.3"
 selenium = {extras = ["py"], version = "^4.34.2"}
 kafka-python = "^2.2.15"
 dotenv = "^0.9.9"
+selenium-wire = "^5.1.0"
 
 
 [build-system]
