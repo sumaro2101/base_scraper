@@ -5,7 +5,7 @@ from .exeptions import (
     RequiredEnviromentNotSetError,
 )
 from .utils import check_type_browser, ENV_NAME_BROWSER
-from .common import ErrorCodeProgram
+from ..common.common import ErrorCodeProgram
 
 
 class TestUtils(unittest.TestCase):

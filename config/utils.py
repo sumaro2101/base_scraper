@@ -1,4 +1,4 @@
-from .common import TypeBrowser, ErrorCodeProgram
+from common import TypeBrowser, ErrorCodeProgram
 from .exeptions import (
     ClassBrowserNotProvideError,
     RequiredEnviromentNotSetError,
