@@ -4,6 +4,8 @@ from types import MappingProxyType
 
 from common import TypeBrowser
 from .proxy import Proxy
+from .options import ProxyOptionsGoogle
+from .d_types import ID_INSTANCE, ADAPT_ID_INSTANCE
 from config import settings
 
 
@@ -16,22 +18,27 @@ class Adapter(ABC):
     type_browser: ClassVar[str]
 
     @abstractmethod
-    def __init__(self, proxy: Proxy) -> None:
+    def __init__(self, proxy: Proxy[ID_INSTANCE]) -> None:
         self._proxy = proxy
 
     @abstractmethod
-    def adapt_proxy(self) -> Proxy[str]: ...
+    def adapt_proxy(self) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str: ...
 
 
 class GoggleChromeAdapter(Adapter):
     distinctiveness: ClassVar[str] = settings.GOOGLE_SETTINGS.PROXY_DISTINCTIVENESS
+    security_distinctiveness: ClassVar[ProxyOptionsGoogle] = ProxyOptionsGoogle
     type_browser: ClassVar[str] = TypeBrowser.CHROME
 
     def __init__(self, proxy: Proxy):
         super().__init__(proxy)
 
-    def adapt_proxy(self):
-        return super().adapt_proxy()
+    def adapt_proxy(self) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str:
+        if not self._proxy.is_secure:
+            return self.distinctiveness.format(self._proxy.id_proxy)
+        return self.security_distinctiveness.options({
+            'https': self._proxy.id_proxy,
+        })
 
 
 class EdgeAdapter(Adapter):

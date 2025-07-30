@@ -6,10 +6,11 @@ from typing import Generic, TypeVar, ClassVar
 from collections import abc
 
 from .adapters import MenuAdapters, Adapter
+from .d_types import ID_INSTANCE, ADAPT_ID_INSTANCE
 from engine.browser import Browser
 
 
-T = TypeVar('T', bound=str)
+T = TypeVar('T', bound=ID_INSTANCE)
 
 
 class Proxy(Generic[T]):
@@ -17,17 +18,27 @@ class Proxy(Generic[T]):
     Прокси тип
     """
     adapters: ClassVar[dict[str, Adapter]] = MenuAdapters
+    secure: ClassVar[bool]
 
     def __init__(self,
                  id_proxy: T,
                  ) -> None:
         self._id_proxy = id_proxy
+        self.secure = self._check_secure()
 
     @property
     def id_proxy(self) -> T:
         return self._id_proxy
 
-    def adapt_to_browser(self, browser: Browser) -> 'Proxy'[str]:
+    @property
+    def is_secure(self) -> bool:
+        return self.secure
+
+    def _check_secure(self) -> bool:
+        finded = self._id_proxy.find('@')
+        return finded is not -1
+
+    def adapt_to_browser(self, browser: Browser) -> ADAPT_ID_INSTANCE | dict[dict[str, T]]:
         adapter = self.adapters[browser.type_browser]
         return adapter(self).adapt_proxy()
 
