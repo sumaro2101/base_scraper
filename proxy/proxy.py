@@ -16,6 +16,11 @@ class Proxies(abc.Sequence):
             ids_proxies (list[str]): Список ``IDs`` для ``Proxy``
         """
         self._ids_proxies = list(ids_proxies)
+        self._empty = bool(ids_proxies)
+
+    @property
+    def empty(self) -> bool:
+        return self._empty
 
     def __len__(self):
         return len(self._ids_proxies)
