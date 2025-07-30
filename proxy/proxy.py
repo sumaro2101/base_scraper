@@ -1,19 +1,41 @@
 import operator
 import reprlib
 
+from typing import Generic, TypeVar
+
 from collections import abc
 
 
-class Proxies(abc.Sequence):
+T = TypeVar('T', bound=str)
+
+
+class Proxy(Generic[T]):
+    """
+    Прокси тип
+    """
+    def __init__(self,
+                 id_proxy: T,
+                 ) -> None:
+        self._id_proxy = str(id_proxy)
+
+    @property
+    def id_proxy(self) -> T:
+        return self._id_proxy
+
+
+P = TypeVar('P', bound=Proxy)
+
+
+class Proxies(Generic[P], abc.Sequence):
     """
     Свой тип прокси
     """
     def __init__(self,
-                 ids_proxies: list[str],
+                 ids_proxies: list[T],
                  ) -> None:
         """
         Args:
-            ids_proxies (list[str]): Список ``IDs`` для ``Proxy``
+            ids_proxies (list[T]): Список ``IDs`` для ``Proxy``
         """
         self._ids_proxies = list(ids_proxies)
         self._empty = bool(ids_proxies)
@@ -25,7 +47,7 @@ class Proxies(abc.Sequence):
     def __len__(self):
         return len(self._ids_proxies)
 
-    def __getitem__(self, position: int) -> str:
+    def __getitem__(self, position: int) -> T:
         index = operator.index(position)
         return self._ids_proxies[index]
 

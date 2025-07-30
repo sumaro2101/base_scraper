@@ -24,6 +24,6 @@ class ProxyIPSSetter(Generic[T_co]):
         """
         Устанавливает ``Необходимые прокси адреса`` для браузера
         """
-        self._type_browser.set_proxy(self._proxies_simple)
-        self._type_browser.set_auth_proxy(self._proxies_auth)
+        self._type_browser.set_proxies(self._proxies_simple)
+        self._type_browser.set_auth_proxies(self._proxies_auth)
         return self._type_browser
