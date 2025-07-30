@@ -1,9 +1,12 @@
 import operator
 import reprlib
 
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, ClassVar
 
 from collections import abc
+
+from config.settings import settings
+from .adapters import MenuAdapters, Adapter
 
 
 T = TypeVar('T', bound=str)
@@ -13,6 +16,8 @@ class Proxy(Generic[T]):
     """
     Прокси тип
     """
+    adapter: ClassVar[Adapter] = MenuAdapters[settings.TYPE_BROWSER]
+
     def __init__(self,
                  id_proxy: T,
                  ) -> None:
@@ -22,6 +27,8 @@ class Proxy(Generic[T]):
     def id_proxy(self) -> T:
         return self._id_proxy
 
+    def adapt_to_browser(self) -> 'Proxy'[str]:
+        ...
 
 P = TypeVar('P', bound=Proxy)
 

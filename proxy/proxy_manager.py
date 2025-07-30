@@ -1,6 +1,7 @@
 from typing import TypeVar, Generic
 
 from engine import Browser
+from .proxy import Proxy, Proxies
 
 
 T_co = TypeVar('T_co', bound=Browser, covariant=True)
@@ -14,17 +15,28 @@ class ProxyIPSSetter(Generic[T_co]):
     """
     def __init__(self,
                  type_browser: T_co,
-                 proxies_simple: list[str] | None,
-                 proxies_auth: list[str] | None,
+                 proxies: list[str] | None,
                  ) -> None:
         self._type_browser = type_browser
-        self._proxies_simple = list(proxies_simple) if proxies_simple else list()
-        self._proxies_auth = list(proxies_auth) if proxies_auth else list()
+        self._proxies = list(proxies) if proxies else list()
+
+    def convert_str_to_proxy_type(self, id_proxy: str) -> Proxy[str]:
+        """
+        Помещает ``ID`` в тип ``Proxy``
+        """
+        return Proxy(id_proxy)
+
+    def get_proxies(self) -> Proxies[Proxy[str]]:
+        """
+        Получение списка прокси
+        """
+        return Proxies([self.convert_str_to_proxy_type(proxy)
+                        for proxy
+                        in self._proxies])
 
     def set_ips_proxy(self) -> T_co:
         """
         Устанавливает ``Необходимые прокси адреса`` для браузера
         """
-        self._type_browser.set_proxies(self._proxies_simple)
-        self._type_browser.set_auth_proxies(self._proxies_auth)
+        self._type_browser.set_proxies(self._proxies)
         return self._type_browser
