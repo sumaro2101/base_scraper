@@ -2,7 +2,8 @@ from typing import TypeVar, Generic
 
 from engine import Browser
 
-T_co = TypeVar('T', bound=Browser, covariant=True)
+
+T_co = TypeVar('T_co', bound=Browser, covariant=True)
 
 
 class ProxyIPSSetter(Generic[T_co]):
@@ -17,8 +18,8 @@ class ProxyIPSSetter(Generic[T_co]):
                  proxies_auth: list[str] | None,
                  ) -> None:
         self._type_browser = type_browser
-        self._proxies_simple = list(proxies_simple)
-        self._proxies_auth = list(proxies_auth)
+        self._proxies_simple = list(proxies_simple) if proxies_simple else list()
+        self._proxies_auth = list(proxies_auth) if proxies_auth else list()
 
     def set_ips_proxy(self) -> T_co:
         """
