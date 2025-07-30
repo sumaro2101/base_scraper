@@ -1,4 +1,4 @@
-from .proxy import Proxies
+from .proxy import Proxies, Proxy
 
 
-__all__ = ('Proxies',)
+__all__ = ('Proxies', 'Proxy',)
