@@ -3,6 +3,8 @@ from typing import ClassVar, Any
 from types import MappingProxyType
 
 from common import TypeBrowser
+from .proxy import Proxy
+from config import settings
 
 
 class Adapter(ABC):
@@ -10,14 +12,26 @@ class Adapter(ABC):
     Базовый адаптер
     """
     distinctiveness: ClassVar[Any]
+    security_distinctiveness: ClassVar[Any]
     type_browser: ClassVar[str]
 
     @abstractmethod
-    def adapt(self) -> str: ...
+    def __init__(self, proxy: Proxy) -> None:
+        self._proxy = proxy
+
+    @abstractmethod
+    def adapt_proxy(self) -> Proxy[str]: ...
 
 
 class GoggleChromeAdapter(Adapter):
+    distinctiveness: ClassVar[str] = settings.GOOGLE_SETTINGS.PROXY_DISTINCTIVENESS
     type_browser: ClassVar[str] = TypeBrowser.CHROME
+
+    def __init__(self, proxy: Proxy):
+        super().__init__(proxy)
+
+    def adapt_proxy(self):
+        return super().adapt_proxy()
 
 
 class EdgeAdapter(Adapter):

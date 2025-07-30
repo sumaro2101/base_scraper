@@ -5,8 +5,8 @@ from typing import Generic, TypeVar, ClassVar
 
 from collections import abc
 
-from config.settings import settings
 from .adapters import MenuAdapters, Adapter
+from engine.browser import Browser
 
 
 T = TypeVar('T', bound=str)
@@ -16,7 +16,7 @@ class Proxy(Generic[T]):
     """
     Прокси тип
     """
-    adapter: ClassVar[Adapter] = MenuAdapters[settings.TYPE_BROWSER]
+    adapters: ClassVar[dict[str, Adapter]] = MenuAdapters
 
     def __init__(self,
                  id_proxy: T,
@@ -27,8 +27,10 @@ class Proxy(Generic[T]):
     def id_proxy(self) -> T:
         return self._id_proxy
 
-    def adapt_to_browser(self) -> 'Proxy'[str]:
-        ...
+    def adapt_to_browser(self, browser: Browser) -> 'Proxy'[str]:
+        adapter = self.adapters[browser.type_browser]
+        return adapter(self).adapt_proxy()
+
 
 P = TypeVar('P', bound=Proxy)
 
@@ -38,14 +40,14 @@ class Proxies(Generic[P], abc.Sequence):
     Свой тип прокси
     """
     def __init__(self,
-                 ids_proxies: list[P],
+                 proxies: list[P],
                  ) -> None:
         """
         Args:
             ids_proxies (list[P]): Список ``IDs`` для ``Proxy``
         """
-        self._ids_proxies = list(ids_proxies)
-        self._empty = bool(ids_proxies)
+        self._ids_proxies = list(proxies)
+        self._empty = bool(proxies)
 
     @property
     def empty(self) -> bool:

@@ -17,6 +17,13 @@ ENV_FILE = BASE_DIR / ENV_NAME
 load_dotenv(ENV_FILE)
 
 
+class GoogleChromeSettings(BaseModel):
+    """
+    Конфигурация Google Chrome
+    """
+    PROXY_DISTINCTIVENESS: str = '--proxy-server={0}'
+
+
 class ProxySettings(BaseModel):
     """
     Конфигурация прокси
@@ -37,6 +44,7 @@ class Settings(BaseSettings):
 
     TYPE_BROWSER: str | None = check_type_browser(os.getenv('TYPE_BROWSER'))
     PROXIES: ProxySettings = ProxySettings()
+    GOOGLE_SETTINGS: GoogleChromeSettings = GoogleChromeSettings()
 
 
 settings = Settings()
