@@ -35,12 +35,20 @@ class Proxy(Generic[T]):
         return self.secure
 
     def _check_secure(self) -> bool:
-        finded = self._id_proxy.find('@')
-        return finded is not -1
+        return self._id_proxy.username or self._id_proxy.password
 
     def adapt_to_browser(self, browser: Browser) -> ADAPT_ID_INSTANCE | dict[dict[str, T]]:
         adapter = self.adapters[browser.type_browser]
         return adapter(self).adapt_proxy()
+
+    def __eq__(self, value):
+        return self._id_proxy.__eq__(value)
+
+    def __str__(self) -> str:
+        return str(self._id_proxy)
+
+    def __repr__(self):
+        return repr(self._id_proxy)
 
 
 P = TypeVar('P', bound=Proxy)

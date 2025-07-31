@@ -3,7 +3,7 @@ from typing import ClassVar, Any
 from types import MappingProxyType
 
 from common import TypeBrowser
-from .proxy import Proxy
+from .protocols import SupportProxyProtocol
 from .options import ProxyOptionsGoogle
 from .d_types import ID_INSTANCE, ADAPT_ID_INSTANCE
 from config import settings
@@ -18,7 +18,7 @@ class Adapter(ABC):
     type_browser: ClassVar[str]
 
     @abstractmethod
-    def __init__(self, proxy: Proxy[ID_INSTANCE]) -> None:
+    def __init__(self, proxy: SupportProxyProtocol[ID_INSTANCE]) -> None:
         self._proxy = proxy
 
     @abstractmethod
@@ -30,7 +30,7 @@ class GoggleChromeAdapter(Adapter):
     security_distinctiveness: ClassVar[ProxyOptionsGoogle] = ProxyOptionsGoogle
     type_browser: ClassVar[str] = TypeBrowser.CHROME
 
-    def __init__(self, proxy: Proxy):
+    def __init__(self, proxy: SupportProxyProtocol):
         super().__init__(proxy)
 
     def adapt_proxy(self) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str:

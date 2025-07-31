@@ -1,4 +1,7 @@
 from typing import TypeAlias
 
-ID_INSTANCE: TypeAlias = str
+from pydantic import AnyUrl
+
+
+ID_INSTANCE: TypeAlias = AnyUrl
 ADAPT_ID_INSTANCE: TypeAlias = str

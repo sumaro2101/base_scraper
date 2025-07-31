@@ -28,8 +28,7 @@ class ProxySettings(BaseModel):
     """
     Конфигурация прокси
     """
-    PROXIES_SIMPLE: list[AnyUrl] | None = os.getenv('PROXIES_SIMPLE')
-    PROXIES_AUTH: list[AnyUrl] | None = os.getenv('PROXIES_AUTH')
+    PROXIES_URLS: list[AnyUrl] | None = os.getenv('PROXIES_URLS')
     REGEX_PROXY_PATTERN: str = r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):\d{1,5}\b'
     IPV4: bool = False if os.getenv('IPV4_ENABLE') == 'False' else True
 
