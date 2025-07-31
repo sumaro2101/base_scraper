@@ -1,6 +1,6 @@
 from typing import ClassVar, Literal
 
-from proxy import Proxies, Proxy
+from proxy.proxy import Proxy, Proxies
 
 from common import TypeBrowser
 

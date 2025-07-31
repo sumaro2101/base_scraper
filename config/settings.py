@@ -1,7 +1,6 @@
 import pathlib
-import os
 
-from dotenv import load_dotenv
+from environs import Env
 
 from pydantic import BaseModel, AnyUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -14,7 +13,8 @@ BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 ENV_NAME = '.env'
 ENV_FILE = BASE_DIR / ENV_NAME
 
-load_dotenv(ENV_FILE)
+env = Env()
+env.read_env(ENV_FILE)
 
 
 class GoogleChromeSettings(BaseModel):
@@ -28,9 +28,9 @@ class ProxySettings(BaseModel):
     """
     Конфигурация прокси
     """
-    PROXIES_URLS: list[AnyUrl] | None = os.getenv('PROXIES_URLS')
+    PROXIES_URLS: set[AnyUrl]
     REGEX_PROXY_PATTERN: str = r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):\d{1,5}\b'
-    IPV4: bool = False if os.getenv('IPV4_ENABLE') == 'False' else True
+    IPV4: bool = False if env.str('IPV4', default=False) == 'False' else True
 
 
 class Settings(BaseSettings):
@@ -41,8 +41,8 @@ class Settings(BaseSettings):
         extra='ignore',
     )
 
-    TYPE_BROWSER: str | None = check_type_browser(os.getenv('TYPE_BROWSER'))
-    PROXIES: ProxySettings = ProxySettings()
+    TYPE_BROWSER: str | None = check_type_browser(env.str('TYPE_BROWSER'))
+    PROXIES: ProxySettings = ProxySettings(PROXIES_URLS=env.list('PROXIES_URLS', default=list()))
     GOOGLE_SETTINGS: GoogleChromeSettings = GoogleChromeSettings()
 
 

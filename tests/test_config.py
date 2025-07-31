@@ -1,11 +1,11 @@
 import unittest
 
-from .exeptions import (
+from config.exeptions import (
     ClassBrowserNotProvideError,
     RequiredEnviromentNotSetError,
 )
-from .utils import check_type_browser, ENV_NAME_BROWSER
-from ..common.common import ErrorCodeProgram
+from config.utils import check_type_browser, ENV_NAME_BROWSER
+from common import ErrorCodeProgram
 
 
 class TestUtils(unittest.TestCase):

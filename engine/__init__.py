@@ -1,4 +1,4 @@
-from .browser import Browser
+from .protocols import SupportBrowserProtocol
 
 
-__all__ = ('Browser',)
+__all__ = ('SupportBrowserProtocol',)

@@ -1,7 +1,8 @@
 from typing import TypeVar, Generic
 
-from engine import Browser
+from engine.protocols import Browser
 from .proxy import Proxy, Proxies
+from .d_types import ID_INSTANCE
 
 
 T_co = TypeVar('T_co', bound=Browser, covariant=True)
@@ -15,12 +16,12 @@ class ProxyIPSSetter(Generic[T_co]):
     """
     def __init__(self,
                  type_browser: T_co,
-                 proxies: list[str] | None,
+                 proxies: list[ID_INSTANCE] | None,
                  ) -> None:
         self._type_browser = type_browser
         self._proxies = list(proxies) if proxies else list()
 
-    def convert_str_to_proxy_type(self, id_proxy: str) -> Proxy[str]:
+    def put_to_proxy_type(self, id_proxy: ID_INSTANCE) -> Proxy[ID_INSTANCE]:
         """
         Помещает ``ID`` в тип ``Proxy``
         """
@@ -30,7 +31,7 @@ class ProxyIPSSetter(Generic[T_co]):
         """
         Получение списка прокси
         """
-        return Proxies([self.convert_str_to_proxy_type(proxy)
+        return Proxies([self.put_to_proxy_type(proxy)
                         for proxy
                         in self._proxies])
 

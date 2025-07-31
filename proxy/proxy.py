@@ -5,9 +5,11 @@ from typing import Generic, TypeVar, ClassVar
 
 from collections import abc
 
+from loguru import logger
+
 from .adapters import MenuAdapters, Adapter
 from .d_types import ID_INSTANCE, ADAPT_ID_INSTANCE
-from engine.browser import Browser
+from engine import SupportBrowserProtocol
 
 
 T = TypeVar('T', bound=ID_INSTANCE)
@@ -35,13 +37,14 @@ class Proxy(Generic[T]):
         return self.secure
 
     def _check_secure(self) -> bool:
+        logger.debug(self._id_proxy)
         return self._id_proxy.username or self._id_proxy.password
 
-    def adapt_to_browser(self, browser: Browser) -> ADAPT_ID_INSTANCE | dict[dict[str, T]]:
+    def adapt_to_browser(self, browser: SupportBrowserProtocol) -> ADAPT_ID_INSTANCE | dict[dict[str, T]]:
         adapter = self.adapters[browser.type_browser]
         return adapter(self).adapt_proxy()
 
-    def __eq__(self, value):
+    def __eq__(self, value):  # type: ignore[override]
         return self._id_proxy.__eq__(value)
 
     def __str__(self) -> str:

@@ -1,8 +1,8 @@
 import unittest
 
-from pydantic import AnyUrl
+from pydantic import AnyUrl, BaseModel
 
-from proxy import Proxy
+from proxy.proxy import Proxy
 
 
 class TestProxy(unittest.TestCase):
@@ -10,19 +10,23 @@ class TestProxy(unittest.TestCase):
     Тесты прокси
     """
     def setUp(self):
-        self.ADDRESS_PROXY = AnyUrl('127.0.0.1:9081')
-        self.ADDRESS_PROXY_SECURE = AnyUrl('user:password@127.0.0.1:9081')
+        class Addresses(BaseModel):
+            address_proxy: AnyUrl
+            address_proxy_secure: AnyUrl
+
+        self.address = Addresses(
+            address_proxy="138.128.91.65:8000",
+            address_proxy_secure="login:password@138.128.91.65:8100",
+            )
 
     def test_proxy_simple(self):
-        proxy = Proxy(self.ADDRESS_PROXY)
-        proxy_2 = Proxy(self.ADDRESS_PROXY)
-        self.assertEqual(proxy.id_proxy.port, 9081)
+        proxy = Proxy(self.address.address_proxy)
+        proxy_2 = Proxy(self.address.address_proxy)
         self.assertFalse(proxy.is_secure)
         self.assertEqual(proxy, proxy_2)
 
     def test_proxy_auth(self):
-        proxy = Proxy(self.ADDRESS_PROXY_SECURE)
-        proxy_2 = Proxy(self.ADDRESS_PROXY_SECURE)
-        self.assertEqual(proxy.id_proxy.port, 9081)
+        proxy = Proxy(self.address.address_proxy_secure)
+        proxy_2 = Proxy(self.address.address_proxy_secure)
         self.assertTrue(proxy.is_secure)
         self.assertEqual(proxy, proxy_2)

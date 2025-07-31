@@ -43,7 +43,27 @@ class SupportIDProxyProtocol(Protocol[T]):
 class SupportProxyProtocol(SupportSecureProtocol,
                            SupportAddaptBrowserProtocol,
                            SupportIDProxyProtocol,
+                           Protocol[T],
                            ):
     """
     Протокол прокси
+    """
+
+
+P = TypeVar('P', bound=SupportProxyProtocol)
+
+
+class SupportEmptyProtocol(Protocol):
+    """
+    Протокол поддерживающий пустое атрибут объект
+    """
+
+    @property
+    def empty(self) -> bool: ...
+
+
+class SupportProxiesContainer(SupportEmptyProtocol,
+                              Protocol[P]):
+    """
+    Протокол контейнера прокси
     """
