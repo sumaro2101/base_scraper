@@ -39,7 +39,7 @@ class ProxySettings(BaseModel):
     except json.decoder.JSONDecodeError:
         raise WrongFormatListError(ErrorCodeProgram.JSON_DECODE_ENV_ERROR.format('PROXIES_URLS'))
     REGEX_SCHEME_PATTERN: str = r'((http|https)?:\/\/)'
-    REGEX_ENTER_DATA_PATTERN: str = r'(.{1,}:.{1,}@)'
+    REGEX_ENTER_DATA_PATTERN: str = r'(\w{1,}:\w{1,}@)'
     REGEX_IP_PORT_PATTERN: str = r'([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4})(:[0-9]{1,4})?'
     REGEX_PROXY_PATTERN: str = r'^' + REGEX_SCHEME_PATTERN + r'{0,1}' + REGEX_ENTER_DATA_PATTERN + r'{0,1}' + REGEX_IP_PORT_PATTERN + r'$'
     IPV4: bool = False if os.getenv('IPV4', default=True) == 'False' else True

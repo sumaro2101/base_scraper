@@ -6,6 +6,8 @@ from typing import Generic, TypeVar, ClassVar
 
 from collections import abc
 
+from loguru import logger
+
 from .adapters import MenuAdapters, Adapter
 from .d_types import (ID_INSTANCE,
                       ADAPT_ID_INSTANCE,
@@ -38,7 +40,7 @@ class Proxy(Generic[T]):
         if self._ip_proxy:
             self._get_username_password(self._ip_proxy)
             self._get_ip_port(self._ip_proxy)
-            self._secure = self._check_secure()
+            self._secure = self._check_secure(self._ip_proxy)
 
     @property
     def full_address(self) -> T:
@@ -75,6 +77,7 @@ class Proxy(Generic[T]):
             )
         if enter_data:
             cleared_data = enter_data.group().rstrip('@')
+            logger.debug(cleared_data)
             self._username, self._password = cleared_data.split(':')
 
     def _get_ip_port(self, value: str) -> None:
@@ -90,7 +93,8 @@ class Proxy(Generic[T]):
             settings.PROXIES.REGEX_SCHEME_PATTERN,
             value,
         )
-        return scheme
+        if scheme:
+            return scheme.group().rstrip('://') == 'https'
 
     def adapt_to_browser(self, browser: SupportBrowserProtocol) -> ADAPT_ID_INSTANCE | dict[dict[str, T]]:
         adapter = self.adapters[browser.type_browser]

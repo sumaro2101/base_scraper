@@ -10,16 +10,27 @@ class TestProxy(unittest.TestCase):
     """
     def setUp(self):
         self.settings = settings.model_copy()
-        self.settings.PROXIES.PROXIES_URLS = ['138.128.91.65:8000', 'login:password@138.128.91.65:8100']
+        self.settings.PROXIES.PROXIES_URLS = ['138.128.91.65:8000',
+                                              'login:password@138.128.91.65:8100',
+                                              'https://login:password@138.128.91.65:8100']
 
     def test_proxy_simple(self):
         proxy = Proxy(self.settings.PROXIES.PROXIES_URLS[0])
         proxy_2 = Proxy(self.settings.PROXIES.PROXIES_URLS[0])
         self.assertFalse(proxy.is_secure)
+        self.assertFalse(proxy.with_auth)
         self.assertEqual(proxy, proxy_2)
 
     def test_proxy_auth(self):
+        proxy = Proxy(self.settings.PROXIES.PROXIES_URLS[1])
+        proxy_2 = Proxy(self.settings.PROXIES.PROXIES_URLS[1])
+        self.assertFalse(proxy.is_secure)
+        self.assertTrue(proxy.with_auth)
+        self.assertEqual(proxy, proxy_2)
+
+    def test_proxy_secure(self):
         proxy = Proxy(self.settings.PROXIES.PROXIES_URLS[-1])
         proxy_2 = Proxy(self.settings.PROXIES.PROXIES_URLS[-1])
         self.assertTrue(proxy.is_secure)
+        self.assertTrue(proxy.with_auth)
         self.assertEqual(proxy, proxy_2)
