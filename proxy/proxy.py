@@ -1,3 +1,4 @@
+import re
 import operator
 import reprlib
 
@@ -8,7 +9,13 @@ from collections import abc
 from loguru import logger
 
 from .adapters import MenuAdapters, Adapter
-from .d_types import ID_INSTANCE, ADAPT_ID_INSTANCE
+from .d_types import (ID_INSTANCE,
+                      ADAPT_ID_INSTANCE,
+                      USERNAME_DATA,
+                      PASSWORD_DATA,
+                      SOCKET_INSTANCE,
+                      )
+from config import settings
 from engine import SupportBrowserProtocol
 
 
@@ -26,6 +33,10 @@ class Proxy(Generic[T]):
                  id_proxy: T,
                  ) -> None:
         self._id_proxy = id_proxy
+        self._username = None
+        self._password = None
+        self._socket = None
+        self._get_username_password(self._id_proxy)
         self.secure = self._check_secure()
 
     @property
@@ -36,9 +47,26 @@ class Proxy(Generic[T]):
     def is_secure(self) -> bool:
         return self.secure
 
+    @property
+    def username(self) -> USERNAME_DATA:
+        return self._username
+
+    @property
+    def password(self) -> PASSWORD_DATA:
+        return self._password
+
+    def _get_username_password(self, value: str) -> None:
+        enter_data: re.Match[str] | None = re.search(
+            settings.PROXIES.REGEX_ENTER_DATA_PATTERN,
+            value,
+            )
+        if enter_data:
+            cleared_data = enter_data.group().rstrip('@')
+            self._username, self._password = cleared_data.split(':')
+
     def _check_secure(self) -> bool:
         logger.debug(self._id_proxy)
-        return self._id_proxy.username or self._id_proxy.password
+        return self.username or self.password
 
     def adapt_to_browser(self, browser: SupportBrowserProtocol) -> ADAPT_ID_INSTANCE | dict[dict[str, T]]:
         adapter = self.adapters[browser.type_browser]
