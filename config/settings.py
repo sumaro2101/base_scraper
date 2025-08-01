@@ -1,11 +1,18 @@
+import os
+import json
 import pathlib
+import re
 
-from environs import Env
-
-from pydantic import BaseModel, AnyUrl
+from pydantic import BaseModel, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from dotenv import load_dotenv
+
+from loguru import logger
+
 from .utils import check_type_browser
+from .exeptions import WrongProxyError, WrongFormatListError
+from common import ErrorCodeProgram
 
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
@@ -13,24 +20,41 @@ BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 ENV_NAME = '.env'
 ENV_FILE = BASE_DIR / ENV_NAME
 
-env = Env()
-env.read_env(ENV_FILE)
+load_dotenv(ENV_FILE)
 
 
 class GoogleChromeSettings(BaseModel):
     """
     Конфигурация Google Chrome
     """
-    PROXY_DISTINCTIVENESS: str = '--proxy-server={0}'
+    PROXY_ARGUMENT: str = '--proxy-server={0}'
 
 
 class ProxySettings(BaseModel):
     """
     Конфигурация прокси
     """
-    PROXIES_URLS: set[AnyUrl]
-    REGEX_PROXY_PATTERN: str = r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):\d{1,5}\b'
-    IPV4: bool = False if env.str('IPV4', default=False) == 'False' else True
+    try:
+        PROXIES_URLS: list[str] = json.loads(os.getenv('PROXIES_URLS', default='[]'))
+    except json.decoder.JSONDecodeError as e:
+        raise WrongFormatListError(ErrorCodeProgram.WRONG_FORMAT_LIST_ERROR.format('PROXIES_URLS'))
+    REGEX_PROXY_PATTERN: str = r'^(.*:.*@){0,1}([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4})(:[0-9]{1,4})?$'
+    IPV4: bool = False if os.getenv('IPV4', default=True) == 'False' else True
+    ALONE_PROXY: bool = False if os.getenv('IPV4', default=True) == 'False' else True
+
+    @model_validator(mode='after')
+    def check_proxy_list(self):
+        list_of_proxy: str | list = self.PROXIES_URLS
+        logger.debug(f'Get list from env {list_of_proxy}')
+        if isinstance(list_of_proxy, str):
+            if not list_of_proxy.startswith('[') or not list_of_proxy.endswith(']'):
+                raise WrongFormatListError(ErrorCodeProgram.WRONG_FORMAT_LIST_ERROR.format(list_of_proxy))
+            list_of_proxy = [proxy.strip() for proxy in list_of_proxy.strip('[').strip(']').split(',')]
+        for proxy in list_of_proxy:
+            if re.match(self.REGEX_PROXY_PATTERN, proxy) is None:
+                logger.debug(f'Enter Wrond data {proxy} in regex {self.REGEX_PROXY_PATTERN}')
+                raise WrongProxyError(ErrorCodeProgram.WRONG_PROXY_ERROR.format(proxy))
+        return self
 
 
 class Settings(BaseSettings):
@@ -41,8 +65,8 @@ class Settings(BaseSettings):
         extra='ignore',
     )
 
-    TYPE_BROWSER: str | None = check_type_browser(env.str('TYPE_BROWSER'))
-    PROXIES: ProxySettings = ProxySettings(PROXIES_URLS=env.list('PROXIES_URLS', default=list()))
+    TYPE_BROWSER: str | None = check_type_browser(os.getenv('TYPE_BROWSER'))
+    PROXIES: ProxySettings = ProxySettings()
     GOOGLE_SETTINGS: GoogleChromeSettings = GoogleChromeSettings()
 
 

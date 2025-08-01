@@ -26,7 +26,7 @@ class Adapter(ABC):
 
 
 class GoggleChromeAdapter(Adapter):
-    distinctiveness: ClassVar[str] = settings.GOOGLE_SETTINGS.PROXY_DISTINCTIVENESS
+    distinctiveness: ClassVar[str] = settings.GOOGLE_SETTINGS.PROXY_ARGUMENT
     security_distinctiveness: ClassVar[ProxyOptionsGoogle] = ProxyOptionsGoogle
     type_browser: ClassVar[str] = TypeBrowser.CHROME
 

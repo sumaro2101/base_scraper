@@ -12,7 +12,7 @@ selenium = {extras = ["py"], version = "^4.34.2"}
 kafka-python = "^2.2.15"
 selenium-wire = "^5.1.0"
 pydantic-settings = "^2.10.1"
-environs = "^14.2.0"
+dotenv = "^0.9.9"
 
 
 [tool.poetry.group.linters.dependencies]
