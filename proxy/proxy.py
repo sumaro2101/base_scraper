@@ -6,14 +6,13 @@ from typing import Generic, TypeVar, ClassVar
 
 from collections import abc
 
-from loguru import logger
-
 from .adapters import MenuAdapters, Adapter
 from .d_types import (ID_INSTANCE,
                       ADAPT_ID_INSTANCE,
                       USERNAME_DATA,
                       PASSWORD_DATA,
-                      SOCKET_INSTANCE,
+                      IP_DATA,
+                      PORT_DATA,
                       )
 from config import settings
 from engine import SupportBrowserProtocol
@@ -27,25 +26,31 @@ class Proxy(Generic[T]):
     Прокси тип
     """
     adapters: ClassVar[dict[str, Adapter]] = MenuAdapters
-    secure: ClassVar[bool]
 
     def __init__(self,
-                 id_proxy: T,
+                 ip_proxy: T | None,
                  ) -> None:
-        self._id_proxy = id_proxy
+        self._ip_proxy = ip_proxy
         self._username = None
         self._password = None
-        self._socket = None
-        self._get_username_password(self._id_proxy)
-        self.secure = self._check_secure()
+        self._ip = None
+        self._port = None
+        if self._ip_proxy:
+            self._get_username_password(self._ip_proxy)
+            self._get_ip_port(self._ip_proxy)
+            self._secure = self._check_secure()
 
     @property
-    def id_proxy(self) -> T:
-        return self._id_proxy
+    def full_address(self) -> T:
+        return self._ip_proxy
 
     @property
     def is_secure(self) -> bool:
-        return self.secure
+        return self._secure
+
+    @property
+    def with_auth(self) -> bool:
+        return bool(self._username or self._password)
 
     @property
     def username(self) -> USERNAME_DATA:
@@ -54,6 +59,14 @@ class Proxy(Generic[T]):
     @property
     def password(self) -> PASSWORD_DATA:
         return self._password
+
+    @property
+    def ip(self) -> IP_DATA:
+        return self._ip
+
+    @property
+    def port(self) -> PORT_DATA:
+        return self._port
 
     def _get_username_password(self, value: str) -> None:
         enter_data: re.Match[str] | None = re.search(
@@ -64,9 +77,20 @@ class Proxy(Generic[T]):
             cleared_data = enter_data.group().rstrip('@')
             self._username, self._password = cleared_data.split(':')
 
-    def _check_secure(self) -> bool:
-        logger.debug(self._id_proxy)
-        return self.username or self.password
+    def _get_ip_port(self, value: str) -> None:
+        socket: re.Match[str] = re.search(
+            settings.PROXIES.REGEX_IP_PORT_PATTERN,
+            value,
+        )
+        if socket:
+            self._ip, self._port = socket.group().split(':')
+
+    def _check_secure(self, value: str) -> bool:
+        scheme: re.Match[str] = re.search(
+            settings.PROXIES.REGEX_SCHEME_PATTERN,
+            value,
+        )
+        return scheme
 
     def adapt_to_browser(self, browser: SupportBrowserProtocol) -> ADAPT_ID_INSTANCE | dict[dict[str, T]]:
         adapter = self.adapters[browser.type_browser]
@@ -77,10 +101,10 @@ class Proxy(Generic[T]):
             return str(self) == str(value)
 
     def __str__(self) -> str:
-        return str(self._id_proxy)
+        return str(self._ip_proxy)
 
     def __repr__(self):
-        return repr(self._id_proxy)
+        return repr(self._ip_proxy)
 
 
 P = TypeVar('P', bound=Proxy)

@@ -21,11 +21,11 @@ class ProxyIPSSetter(Generic[T_co]):
         self._type_browser = type_browser
         self._proxies = list(proxies) if proxies else list()
 
-    def put_to_proxy_type(self, id_proxy: ID_INSTANCE) -> Proxy[ID_INSTANCE]:
+    def put_to_proxy_type(self, ip_proxy: ID_INSTANCE) -> Proxy[ID_INSTANCE]:
         """
         Помещает ``ID`` в тип ``Proxy``
         """
-        return Proxy(id_proxy)
+        return Proxy(ip_proxy)
 
     def get_proxies(self) -> Proxies[Proxy[str]]:
         """

@@ -30,14 +30,14 @@ class GoggleChromeAdapter(Adapter):
     security_distinctiveness: ClassVar[ProxyOptionsGoogle] = ProxyOptionsGoogle
     type_browser: ClassVar[str] = TypeBrowser.CHROME
 
-    def __init__(self, proxy: SupportProxyProtocol):
+    def __init__(self, proxy: SupportProxyProtocol[ID_INSTANCE]):
         super().__init__(proxy)
 
     def adapt_proxy(self) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str:
         if not self._proxy.is_secure:
-            return self.distinctiveness.format(self._proxy.id_proxy)
+            return self.distinctiveness.format(self._proxy.full_address)
         return self.security_distinctiveness.options({
-            'https': self._proxy.id_proxy,
+            'https': self._proxy.full_address,
         })
 
 

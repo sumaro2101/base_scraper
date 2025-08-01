@@ -37,7 +37,7 @@ class SupportIDProxyProtocol(Protocol[T]):
     """
 
     @property
-    def id_proxy(self) -> T: ...
+    def full_address(self) -> T: ...
 
 
 class SupportProxyProtocol(SupportSecureProtocol,
