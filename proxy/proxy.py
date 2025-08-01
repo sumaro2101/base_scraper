@@ -73,7 +73,8 @@ class Proxy(Generic[T]):
         return adapter(self).adapt_proxy()
 
     def __eq__(self, value):  # type: ignore[override]
-        return self._id_proxy.__eq__(value)
+        if isinstance(self, value.__class__):
+            return str(self) == str(value)
 
     def __str__(self) -> str:
         return str(self._id_proxy)
