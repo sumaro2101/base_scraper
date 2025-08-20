@@ -1,6 +1,6 @@
 from typing import TypeVar, Generic
 
-from engine.protocols import Browser
+from engine.browser import Browser
 from .proxy import Proxy, Proxies
 from .d_types import ID_INSTANCE
 
@@ -27,7 +27,7 @@ class ProxyIPSSetter(Generic[T_co]):
         """
         return Proxy(ip_proxy)
 
-    def get_proxies(self) -> Proxies[Proxy[str]]:
+    def get_proxies(self) -> Proxies[Proxy[ID_INSTANCE]]:
         """
         Получение списка прокси
         """

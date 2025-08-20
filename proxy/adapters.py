@@ -17,10 +17,7 @@ class Adapter(ABC):
     security_distinctiveness: ClassVar[Any]
     type_browser: ClassVar[str]
 
-    @abstractmethod
-    def __init__(self, proxy: SupportProxyProtocol[ID_INSTANCE]) -> None:
-        self._proxy = proxy
-
+    @classmethod
     @abstractmethod
     def adapt_proxy(self) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str: ...
 
@@ -30,14 +27,12 @@ class GoggleChromeAdapter(Adapter):
     security_distinctiveness: ClassVar[ProxyOptionsGoogle] = ProxyOptionsGoogle
     type_browser: ClassVar[str] = TypeBrowser.CHROME
 
-    def __init__(self, proxy: SupportProxyProtocol[ID_INSTANCE]):
-        super().__init__(proxy)
-
-    def adapt_proxy(self) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str:
-        if not self._proxy.is_secure:
-            return self.distinctiveness.format(self._proxy.full_address)
-        return self.security_distinctiveness.options({
-            'https': self._proxy.full_address,
+    @classmethod
+    def adapt_proxy(cls, proxy: SupportProxyProtocol[ID_INSTANCE]) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str:
+        if not proxy.is_secure:
+            return cls.distinctiveness.format(proxy.full_address)
+        return cls.security_distinctiveness.options({
+            'https': proxy.full_address,
         })
 
 

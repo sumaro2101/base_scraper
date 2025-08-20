@@ -1,15 +1,20 @@
-from typing import ClassVar, Literal
+from typing import ClassVar
 
 from proxy.proxy import Proxy, Proxies
 
-from common import TypeBrowser
+from config import settings
+from proxy.adapters import MenuAdapters, Adapter
 
 
 class Browser:
-    type_browser: ClassVar[Literal[TypeBrowser.CHROME,
-                                   TypeBrowser.EDGE,
-                                   TypeBrowser.FIREFOX,
-                                   TypeBrowser.SAFARI]]
+    """
+    Класс браузера (Основная рабочая единица)
+    """
+    type_browser: ClassVar[str] = settings.TYPE_BROWSER
+    adapter: ClassVar[Adapter]
+
+    def __init__(self):
+        self.adapter = MenuAdapters[self.type_browser]
 
     def set_proxies(self, ids_proxies: Proxies[Proxy[str]]) -> None:
         ...

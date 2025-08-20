@@ -27,7 +27,6 @@ class Proxy(Generic[T]):
     """
     Прокси тип
     """
-    adapters: ClassVar[dict[str, Adapter]] = MenuAdapters
 
     def __init__(self,
                  ip_proxy: T | None,
@@ -97,8 +96,7 @@ class Proxy(Generic[T]):
             return scheme.group().rstrip('://') == 'https'
 
     def adapt_to_browser(self, browser: SupportBrowserProtocol) -> ADAPT_ID_INSTANCE | dict[dict[str, T]]:
-        adapter = self.adapters[browser.type_browser]
-        return adapter(self).adapt_proxy()
+        return browser.adapter.adapt_proxy()
 
     def __eq__(self, value):  # type: ignore[override]
         if isinstance(self, value.__class__):

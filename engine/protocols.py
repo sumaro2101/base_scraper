@@ -1,5 +1,7 @@
 from typing import Protocol, ClassVar
 
+from proxy.adapters import Adapter
+
 
 class SupportSetProxyProtocol(Protocol):
     """
@@ -11,13 +13,21 @@ class SupportSetProxyProtocol(Protocol):
 
 class SupportTypeBrowserProtocol(Protocol):
     """
-    Протокол поддержки протокола
+    Протокол поддержки типа браузера
     """
     type_browser: ClassVar[str]
 
 
+class SupportAdapterProtocol(Protocol):
+    """
+    Протокол поддержки адаптеров
+    """
+    adapter: ClassVar[Adapter]
+
+
 class SupportBrowserProtocol(SupportSetProxyProtocol,
-                             SupportTypeBrowserProtocol):
+                             SupportTypeBrowserProtocol,
+                             SupportAdapterProtocol):
     """
     Протокол поддержки браузера
     """
