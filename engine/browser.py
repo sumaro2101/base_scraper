@@ -21,4 +21,4 @@ class Browser:
         self._proxyes = proxies
 
     def __enter__(self) -> Generator[None, None, ServeProcess]:
-        yield ServeProcess
+        yield ServeProcess(self.adapter.get_options())

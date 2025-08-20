@@ -2,11 +2,13 @@ from abc import ABC, abstractmethod
 from typing import ClassVar, Any
 from types import MappingProxyType
 
+from selenium import webdriver
+
 from common import TypeBrowser
 from proxy import Proxy
-from .options import OptionsGoogle, Options
-from .d_types import ID_INSTANCE, ADAPT_ID_INSTANCE
 from config import settings
+from .options import Options
+from .d_types import ID_INSTANCE, ADAPT_ID_INSTANCE
 
 
 class Adapter(ABC):
@@ -17,23 +19,26 @@ class Adapter(ABC):
     security_distinctiveness: ClassVar[Any]
     type_browser: ClassVar[str]
 
-    @classmethod
     @abstractmethod
     def adapt_proxy(self) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str: ...
 
 
 class GoggleChromeAdapter(Adapter):
-    options: ClassVar[Options] = OptionsGoogle
     type_browser: ClassVar[str] = TypeBrowser.CHROME
-    options: ClassVar[Options] = OptionsGoogle
+    distinctiveness: ClassVar[str] = settings.GOOGLE_SETTINGS.PROXY_ARGUMENT
 
-    @classmethod
-    def adapt_proxy(cls, proxy: Proxy[ID_INSTANCE]) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str:
+    def __init__(self, proxy: Proxy[ID_INSTANCE]):
+        self._proxy = proxy
+        self._options = webdriver.ChromeOptions()
+        self._secure_options = None
         if not proxy.is_secure:
-            return cls.distinctiveness.format(proxy.full_address)
-        return cls.security_distinctiveness.options({
-            'https': proxy.full_address,
-        })
+            adapt_proxy = self.distinctiveness.format(proxy.full_address)
+            self._options.add_argument(adapt_proxy)
+        else:
+            self._secure_options = dict(proxy=dict(https=proxy.full_address))
+
+    def wire_options(self) -> bool:
+        return self._proxy.is_secure
 
 
 class EdgeAdapter(Adapter):
