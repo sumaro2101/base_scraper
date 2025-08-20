@@ -3,8 +3,8 @@ from typing import ClassVar, Any
 from types import MappingProxyType
 
 from common import TypeBrowser
-from .protocols import SupportProxyProtocol
-from .options import ProxyOptionsGoogle
+from proxy import Proxy
+from .options import OptionsGoogle, Options
 from .d_types import ID_INSTANCE, ADAPT_ID_INSTANCE
 from config import settings
 
@@ -23,12 +23,12 @@ class Adapter(ABC):
 
 
 class GoggleChromeAdapter(Adapter):
-    distinctiveness: ClassVar[str] = settings.GOOGLE_SETTINGS.PROXY_ARGUMENT
-    security_distinctiveness: ClassVar[ProxyOptionsGoogle] = ProxyOptionsGoogle
+    options: ClassVar[Options] = OptionsGoogle
     type_browser: ClassVar[str] = TypeBrowser.CHROME
+    options: ClassVar[Options] = OptionsGoogle
 
     @classmethod
-    def adapt_proxy(cls, proxy: SupportProxyProtocol[ID_INSTANCE]) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str:
+    def adapt_proxy(cls, proxy: Proxy[ID_INSTANCE]) -> dict[dict[str, ADAPT_ID_INSTANCE]] | str:
         if not proxy.is_secure:
             return cls.distinctiveness.format(proxy.full_address)
         return cls.security_distinctiveness.options({

@@ -1,9 +1,12 @@
 from typing import ClassVar
 
-from proxy.proxy import Proxy, Proxies
+from collections.abc import Generator
+
+from proxy import Proxy, Proxies
 
 from config import settings
-from proxy.adapters import MenuAdapters, Adapter
+from adapters import MenuAdapters, Adapter
+from .processor import ServeProcess
 
 
 class Browser:
@@ -13,8 +16,9 @@ class Browser:
     type_browser: ClassVar[str] = settings.TYPE_BROWSER
     adapter: ClassVar[Adapter]
 
-    def __init__(self):
+    def __init__(self, proxies: Proxies[Proxy]):
         self.adapter = MenuAdapters[self.type_browser]
+        self._proxyes = proxies
 
-    def set_proxies(self, ids_proxies: Proxies[Proxy[str]]) -> None:
-        ...
+    def __enter__(self) -> Generator[None, None, ServeProcess]:
+        yield ServeProcess
